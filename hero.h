@@ -5,23 +5,21 @@
 #include "projectile.h"
 
 class Hero {
-private:
-    sf::Vector2f position;
-    float speed;
-    int ammo;
-    float health;
-    sf::RectangleShape shape;
-
 public:
-    Hero(sf::Vector2f startPosition, float health, int initialAmmo);
+    Hero(sf::Vector2f position, float speed);
 
-    void move(float deltaTime);
-    void shoot(std::vector<Projectile> &projectiles, const sf::Vector2f &target);
-    void draw(sf::RenderWindow &window);
-    int getAmmo() const;
-    void addAmmo(int amount);
-    void takeDamage(float damage);
-    bool isDestroyed() const;
+    void handleInput();
+    void update(float deltaTime);
+    void draw(sf::RenderWindow& window);
+    sf::RectangleShape& getShape();
+    sf::Vector2f getDirection();
+
+private:
+    sf::RectangleShape shape;
+    sf::Vector2f direction;
+    float speed;
+    float shootingCooldown;
+    float shootingCooldownMax;
 };
 
-#endif
+#endif // HERO_H

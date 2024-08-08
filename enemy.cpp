@@ -1,51 +1,60 @@
 #include "enemy.h"
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 
-Enemy::Enemy(sf::Vector2f startPosition, sf::Vector2f moveDirection, float moveSpeed, float enemyHealth, float cooldown)
-    : position(startPosition), direction(moveDirection), speed(moveSpeed), health(enemyHealth), attackCooldown(cooldown) {
-    shape.setSize(sf::Vector2f(40.0f, 40.0f)); // Ajuste do tamanho para retângulo
-    shape.setFillColor(sf::Color::Yellow);
+Enemy::Enemy(sf::Vector2f startPosition, float speed)
+    : position(startPosition), speed(speed), health(3), shootingCooldown(0.0f), shootingCooldownMax(1.0f) {
+    shape.setSize(sf::Vector2f(50.0f, 50.0f));
+    shape.setFillColor(sf::Color::Red);
     shape.setPosition(position);
-    attackClock.restart();
 }
 
-sf::RectangleShape Enemy::getShape() const {
-    return shape;
-}
-
-void Enemy::update(float deltaTime, std::vector<Projectile>& projectiles, const sf::Vector2f& basePosition) {
-    sf::Vector2f moveDirection = basePosition - position;
-    float length = std::sqrt(moveDirection.x * moveDirection.x + moveDirection.y * moveDirection.y);
+void Enemy::update(float deltaTime, const sf::RectangleShape& baseShape, std::vector<Projectile>& projectiles) {
+    // Move em direção à base
+    sf::Vector2f basePos = baseShape.getPosition();
+    sf::Vector2f direction = basePos - position;
+    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
     if (length != 0) {
-        moveDirection /= length;
+        direction /= length;
     }
-    position += moveDirection * speed * deltaTime;
+
+    position += direction * speed * deltaTime;
     shape.setPosition(position);
 
-    if (attackClock.getElapsedTime().asSeconds() >= attackCooldown) {
-        sf::Vector2f projectileDirection = moveDirection;
-        float projectileSpeed = 200.0f;
-        float projectileRange = 400.0f;
-        projectiles.emplace_back(position + moveDirection * shape.getSize().x / 2.0f, projectileDirection, projectileSpeed, projectileRange);
-        attackClock.restart();
+    // Atualiza o cooldown do tiro
+    if (shootingCooldown > 0.0f) {
+        shootingCooldown -= deltaTime;
+    }
+
+    // Verifica se pode atirar
+    if (canShoot()) {
+        // Atira em direção à base
+        projectiles.emplace_back(position, direction, 150.0f, 800.0f, false); // Velocidade do projétil ajustada
+        resetShootingCooldown();
     }
 }
 
-bool Enemy::isDestroyed() const {
-    return health <= 0;
-}
-
-void Enemy::takeDamage(float damage) {
-    health -= damage;
-    if (health < 0) {
-        health = 0;
-    }
-}
-
-void Enemy::draw(sf::RenderWindow &window) const {
+void Enemy::draw(sf::RenderWindow& window) {
     window.draw(shape);
 }
 
-bool Enemy::checkCollision(const sf::RectangleShape &target) const {
-    return shape.getGlobalBounds().intersects(target.getGlobalBounds());
+bool Enemy::isDead() {
+    return health <= 0;
+}
+
+sf::RectangleShape& Enemy::getShape() {
+    return shape;
+}
+
+void Enemy::takeDamage() {
+    health -= 1;
+}
+
+bool Enemy::canShoot() {
+    return shootingCooldown <= 0.0f;
+}
+
+void Enemy::resetShootingCooldown() {
+    shootingCooldown = shootingCooldownMax;
 }

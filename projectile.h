@@ -3,29 +3,31 @@
 
 #include <SFML/Graphics.hpp>
 
-class Projectile
-{
+class Projectile {
+public:
+    // Construtor atualizado
+    Projectile(sf::Vector2f startPosition, sf::Vector2f direction, float speed, float range, bool isFromHero);
+
+    // Getters
+    sf::Vector2f getPosition() const;
+    sf::CircleShape getShape() const;
+    bool isHero() const;
+
+    // Métodos
+    void update(float deltaTime);
+    bool hasReachedMaxRange();
+    void draw(sf::RenderWindow& window);
+    bool checkCollision(const sf::RectangleShape& target);
+
 private:
     sf::Vector2f position;
     sf::Vector2f direction;
     float speed;
     float maxRange;
     float traveledDistance;
+    bool heroProjectile;  // Novo membro que indica se o projétil é do herói
+
     sf::CircleShape shape;
-
-public:
-    // Construtor
-    Projectile(sf::Vector2f startPosition, sf::Vector2f direction, float speed, float range);
-
-    // Getters
-    sf::Vector2f getPosition() const;
-    sf::CircleShape getShape() const;
-
-    // Métodos da classe
-    void update(float deltaTime);
-    bool hasReachedMaxRange();
-    void draw(sf::RenderWindow &window);
-    bool checkCollision(const sf::Shape &target); // Atualizado para aceitar sf::Shape
 };
 
-#endif
+#endif // PROJECTILE_H

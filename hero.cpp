@@ -1,63 +1,53 @@
 #include "hero.h"
-#include <cmath>
+#include <math.h>
 
-Hero::Hero(sf::Vector2f startPosition, float health, int initialAmmo)
-    : position(startPosition), speed(200.0f), ammo(initialAmmo), health(health)
-{
-    shape.setSize(sf::Vector2f(50.0f, 50.0f));
-    shape.setPosition(position);
-    shape.setFillColor(sf::Color::Green);
-}
-
-void Hero::move(float deltaTime)
-{
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        position.y -= speed * deltaTime;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        position.y += speed * deltaTime;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        position.x -= speed * deltaTime;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        position.x += speed * deltaTime;
-
+Hero::Hero(sf::Vector2f position, float speed)
+    : speed(speed), direction(0.0f, 0.0f), shootingCooldown(0.0f), shootingCooldownMax(0.5f) {
+    shape.setSize(sf::Vector2f(50.0f, 50.0f)); // Define o tamanho do herói
+    shape.setFillColor(sf::Color::Green); // Define a cor do herói
     shape.setPosition(position);
 }
 
-void Hero::shoot(std::vector<Projectile> &projectiles, const sf::Vector2f &target)
-{
-    if (ammo > 0) {
-        sf::Vector2f direction = target - position;
-        float length = sqrt(direction.x * direction.x + direction.y * direction.y);
-        direction /= length; // Normalize
+void Hero::handleInput() {
+    direction = sf::Vector2f(0.0f, 0.0f); // Reinicia a direção
 
-        projectiles.emplace_back(position, direction, 300.0f, 800.0f);
-        ammo--;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        direction.y -= 1.0f;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+        direction.y += 1.0f;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+        direction.x -= 1.0f;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+        direction.x += 1.0f;
+    }
+
+    // Normaliza a direção se não for zero
+    if (direction != sf::Vector2f(0.0f, 0.0f)) {
+        float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+        direction /= length;
     }
 }
 
-void Hero::draw(sf::RenderWindow &window)
-{
+void Hero::update(float deltaTime) {
+    shape.move(direction * speed * deltaTime);
+
+    // Atualiza o cooldown do tiro
+    if (shootingCooldown > 0.0f) {
+        shootingCooldown -= deltaTime;
+    }
+}
+
+void Hero::draw(sf::RenderWindow& window) {
     window.draw(shape);
 }
 
-int Hero::getAmmo() const
-{
-    return ammo;
+sf::RectangleShape& Hero::getShape() {
+    return shape;
 }
 
-void Hero::addAmmo(int amount)
-{
-    ammo += amount;
-}
-
-void Hero::takeDamage(float damage)
-{
-    health -= damage;
-    if (health < 0)
-        health = 0;
-}
-
-bool Hero::isDestroyed() const
-{
-    return health <= 0;
+sf::Vector2f Hero::getDirection() {
+    return direction;
 }
