@@ -17,7 +17,7 @@ public:
     void update(float deltaTime);
     bool hasReachedMaxRange();
     void draw(sf::RenderWindow& window);
-    bool checkCollision(const sf::RectangleShape& target);
+    bool checkCollision(const sf::Sprite& target);
 
 private:
     sf::Vector2f position;

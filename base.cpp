@@ -1,10 +1,13 @@
 #include "base.h"
 
 //Construtor
-Base::Base(sf::Vector2f position, float health, float regen) : position(position), maxHealth(health), currentHealth(health), regenRate(regen) {
-    shape.setSize(sf::Vector2f(300.0f, 200.0f));
-    shape.setPosition(position);
-    shape.setFillColor(sf::Color::Blue);
+Base::Base(sf::Vector2f position, float health, float regen, const std::string& textureFile) : position(position), maxHealth(health), currentHealth(health), regenRate(regen) {
+    if(!baseTexture.loadFromFile("base.png")){
+        //error
+    }
+    baseSprite.setScale(sf::Vector2f(1.0f, 1.0f));
+    baseSprite.setTexture(baseTexture);
+    baseSprite.setPosition(position);
 }
 
 //Getters
@@ -12,8 +15,8 @@ float Base::getCurrentHealth() const{
     return currentHealth;
 }
 
-sf::RectangleShape Base::getShape() const {
-    return shape;
+sf::Sprite Base::getSprite() const {
+    return baseSprite;
 }
 
 //Métodos
@@ -24,15 +27,15 @@ void Base::takeDamage(float damage) {
     }
 }
 
-void Base::regenerate(float deltaTime) {
-    currentHealth += regenRate * deltaTime * 0.3f;
-    if (currentHealth > maxHealth) {
-        currentHealth = maxHealth;
-    }
-}
+//void Base::regenerate(float deltaTime) {
+  //  currentHealth += regenRate * deltaTime * 0.3f;
+  //if (currentHealth > maxHealth) {
+  //  currentHealth = maxHealth;
+  //  }
+//}
 
 void Base::draw(sf::RenderWindow &window) {
-    window.draw(shape);
+    window.draw(baseSprite);
 }
 
 bool Base::isDestroyed() {

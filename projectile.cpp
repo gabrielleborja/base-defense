@@ -38,6 +38,6 @@ void Projectile::draw(sf::RenderWindow& window) {
     window.draw(shape);
 }
 
-bool Projectile::checkCollision(const sf::RectangleShape& target) {
+bool Projectile::checkCollision(const sf::Sprite& target) {
     return shape.getGlobalBounds().intersects(target.getGlobalBounds());
 }

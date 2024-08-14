@@ -2,15 +2,19 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 
-Enemy::Enemy(sf::Vector2f startPosition, float speed)
+Enemy::Enemy(sf::Vector2f startPosition, float speed, const std::string& textureFile)
     : position(startPosition), speed(speed), health(3), shootingCooldown(0.0f), shootingCooldownMax(1.0f) {
-    shape.setSize(sf::Vector2f(50.0f, 50.0f));
-    shape.setFillColor(sf::Color::Red);
-    shape.setPosition(position);
+    if(!enemyTexture.loadFromFile("inimigos.png")){
+        std::cerr << "Erro ao carregar a textura inimigos.png" << std::endl;
+    }
+    enemySprite.setScale(sf::Vector2f(0.5f, 0.5f));
+    enemySprite.setTexture(enemyTexture);
+    enemySprite.setPosition(position);
 }
 
-void Enemy::update(float deltaTime, const sf::RectangleShape& baseShape, std::vector<Projectile>& projectiles) {
+void Enemy::update(float deltaTime, const sf::Sprite& baseShape, std::vector<Projectile>& projectiles) {
     // Move em direção à base
     sf::Vector2f basePos = baseShape.getPosition();
     sf::Vector2f direction = basePos - position;
@@ -20,7 +24,7 @@ void Enemy::update(float deltaTime, const sf::RectangleShape& baseShape, std::ve
     }
 
     position += direction * speed * deltaTime;
-    shape.setPosition(position);
+    enemySprite.setPosition(position);
 
     // Atualiza o cooldown do tiro
     if (shootingCooldown > 0.0f) {
@@ -36,15 +40,15 @@ void Enemy::update(float deltaTime, const sf::RectangleShape& baseShape, std::ve
 }
 
 void Enemy::draw(sf::RenderWindow& window) {
-    window.draw(shape);
+    window.draw(enemySprite);
 }
 
 bool Enemy::isDead() {
     return health <= 0;
 }
 
-sf::RectangleShape& Enemy::getShape() {
-    return shape;
+sf::Sprite& Enemy::getSprite() {
+    return enemySprite;
 }
 
 void Enemy::takeDamage() {

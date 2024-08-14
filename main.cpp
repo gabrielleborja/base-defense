@@ -12,19 +12,19 @@ int main() {
     const unsigned int windowWidth = 1200;
     const unsigned int windowHeight = 800;
 
-    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Base Defense Test");
+    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Base Defense");
 
     const float baseWidth = 600.0f;
     const float baseHeight = 400.0f;
 
     sf::Vector2f basePosition(
-        (windowWidth - baseWidth) / 2.0f,
-        (windowHeight - baseHeight) / 2.0f
+        ((windowWidth - baseWidth)+ 50.0 )/ 2.0f,
+        ((windowHeight - baseHeight) -10.0)/ 2.0f
     );
 
-    Base base(basePosition, 100.0f, 5.0f);
-    base.getShape().setSize(sf::Vector2f(baseWidth, baseHeight));
-    base.getShape().setPosition(basePosition);
+    Base base(basePosition, 100.0f, 5.0f, "base.png");
+    base.getSprite().setScale(sf::Vector2f(baseWidth, baseHeight));
+    base.getSprite().setPosition(basePosition);
 
     sf::RectangleShape healthBarBackground;
     healthBarBackground.setSize(sf::Vector2f(200.0f, 20.0f));
@@ -64,7 +64,7 @@ int main() {
                 }
 
                 float projectileSpeed = 300.0f;
-                float projectileRange = 800.0f;
+                float projectileRange = 700.0f;
                 projectiles.emplace_back(heroPos + sf::Vector2f(25.0f, 25.0f), direction, projectileSpeed, projectileRange, true); // true indica que o projétil é do herói
             }
         }
@@ -72,7 +72,7 @@ int main() {
         float deltaTime = clock.restart().asSeconds();
 
         // Adicionar um novo inimigo a cada três segundos
-        if (enemySpawnClock.getElapsedTime().asSeconds() >= 3.0f) {
+        if (enemySpawnClock.getElapsedTime().asSeconds() >= 4.0f) {
             enemySpawnClock.restart();
 
             // Definir a posição inicial do inimigo em uma das bordas
@@ -98,7 +98,7 @@ int main() {
                     break;
             }
 
-            enemies.emplace_back(sf::Vector2f(xPos, yPos), 50.0f); // Velocidade reduzida
+            enemies.emplace_back(sf::Vector2f(xPos, yPos), 50.0f, "inimigos.png"); // Velocidade reduzida
         }
 
         for (auto it = projectiles.begin(); it != projectiles.end(); /* vazio */) {
@@ -111,7 +111,7 @@ int main() {
             } else if (it->isHero()) {
                 // Verifica colisão com inimigos
                 for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); /* vazio */) {
-                    if (it->checkCollision(enemyIt->getShape())) {
+                    if (it->checkCollision(enemyIt->getSprite())) {
                         enemyIt->takeDamage();
                         it = projectiles.erase(it);
                         removed = true;
@@ -122,8 +122,10 @@ int main() {
                 }
             } else {
                 // Verifica colisão com a base
-                if (it->checkCollision(base.getShape())) {
-                    base.takeDamage(5.0f);  // Causa 5 de dano à base
+                if (it->checkCollision(base.getSprite())) {
+                    base.takeDamage(3.0f);  // Causa 5 de dano à base
+                    float x = base.getCurrentHealth();
+                    if (x<=0) window.close();
                     it = projectiles.erase(it); // Remove o projétil após o dano
                     removed = true;
                 }
@@ -139,13 +141,13 @@ int main() {
             if (it->isDead()) {
                 it = enemies.erase(it);
             } else {
-                it->update(deltaTime, base.getShape(), projectiles); // Passa a lista de projéteis
+                it->update(deltaTime, base.getSprite(), projectiles); // Passa a lista de projéteis
 
                 ++it;
             }
         }
 
-        base.regenerate(deltaTime);
+        //base.regenerate(deltaTime);
 
         float healthPercentage = base.getCurrentHealth() / 100.0f;
         healthBar.setSize(sf::Vector2f(200.0f * healthPercentage, 20.0f));

@@ -9,15 +9,16 @@ class Base {
         float maxHealth;
         float currentHealth;
         float regenRate;
-        sf::RectangleShape shape;
+        sf::Sprite baseSprite;
+        sf::Texture baseTexture;
 
     public:
         //Construtor
-        Base(sf::Vector2f position, float health, float regen);
+        Base(sf::Vector2f position, float health, float regen, const std::string& textureFile);
 
         //Getters
         float getCurrentHealth() const;
-        sf::RectangleShape getShape() const;
+        sf::Sprite getSprite() const;
 
         //Métodos
         void takeDamage(float damage);
