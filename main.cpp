@@ -36,7 +36,7 @@ int main() {
     healthBar.setFillColor(sf::Color::Green);
     healthBar.setPosition(windowWidth - 210.0f, 10.0f);
 
-    Hero hero(sf::Vector2f(windowWidth / 2.0f - 25.0f, windowHeight / 2.0f - 25.0f), 200.0f);
+    Hero hero(sf::Vector2f(windowWidth / 2.0f - 25.0f, windowHeight / 2.0f - 25.0f), 200.0f, "heroi.png");
 
     std::vector<Projectile> projectiles;
     std::vector<Enemy> enemies;
@@ -166,6 +166,7 @@ int main() {
         }
 
         for (auto& enemy : enemies) {
+            enemy.render(window);
             enemy.draw(window);
         }
 

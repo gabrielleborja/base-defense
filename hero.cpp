@@ -1,11 +1,15 @@
 #include "hero.h"
 #include <math.h>
+#include <iostream>
 
-Hero::Hero(sf::Vector2f position, float speed)
+Hero::Hero(sf::Vector2f position, float speed, const std::string& textureFile)
     : speed(speed), direction(0.0f, 0.0f), shootingCooldown(0.0f), shootingCooldownMax(0.5f) {
-    shape.setSize(sf::Vector2f(50.0f, 50.0f)); // Define o tamanho do herói
-    shape.setFillColor(sf::Color::Green); // Define a cor do herói
-    shape.setPosition(position);
+    if(!heroTexture.loadFromFile("heroi.png")){
+        std::cerr << "Erro ao carregar a textura heroi.png" << std::endl;
+    }
+    heroSprite.setTexture(heroTexture);
+    heroSprite.setScale(sf::Vector2f(1.0f, 1.0f)); // Define o tamanho do herói
+    heroSprite.setPosition(position);
 }
 
 void Hero::handleInput() {
@@ -32,7 +36,7 @@ void Hero::handleInput() {
 }
 
 void Hero::update(float deltaTime) {
-    shape.move(direction * speed * deltaTime);
+    heroSprite.move(direction * speed * deltaTime);
 
     // Atualiza o cooldown do tiro
     if (shootingCooldown > 0.0f) {
@@ -41,11 +45,11 @@ void Hero::update(float deltaTime) {
 }
 
 void Hero::draw(sf::RenderWindow& window) {
-    window.draw(shape);
+    window.draw(heroSprite);
 }
 
-sf::RectangleShape& Hero::getShape() {
-    return shape;
+sf::Sprite& Hero::getShape() {
+    return heroSprite;
 }
 
 sf::Vector2f Hero::getDirection() {

@@ -9,8 +9,8 @@ Enemy::Enemy(sf::Vector2f startPosition, float speed, const std::string& texture
     if(!enemyTexture.loadFromFile("inimigos.png")){
         std::cerr << "Erro ao carregar a textura inimigos.png" << std::endl;
     }
-    enemySprite.setScale(sf::Vector2f(0.5f, 0.5f));
     enemySprite.setTexture(enemyTexture);
+    enemySprite.setScale(sf::Vector2f(0.5f, 0.5f));
     enemySprite.setPosition(position);
 }
 
