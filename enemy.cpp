@@ -45,6 +45,7 @@ void Enemy::update(float deltaTime, const sf::Vector2f& heroPosition, const sf::
     }
 }
 
+
 void Enemy::draw(sf::RenderWindow& window) {
     window.draw(enemySprite);
 }

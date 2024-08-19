@@ -173,6 +173,26 @@ int main() {
             }
         }
 
+<<<<<<< HEAD
+=======
+
+        // Atualizar inimigos
+        for (auto it = enemies.begin(); it != enemies.end(); /* vazio */) {
+            if (it->isDead()) {
+                it = enemies.erase(it);
+            } else {
+                it->update(deltaTime, hero.getShape().getPosition(), base.getSprite().getPosition(), projectiles); // Passa a lista de projéteis
+
+                ++it;
+            }
+        }
+
+        //base.regenerate(deltaTime);
+
+        float healthPercentage = base.getCurrentHealth() / 100.0f;
+        healthBar.setSize(sf::Vector2f(200.0f * healthPercentage, 20.0f));
+
+>>>>>>> f3375e5538ad0aa6def07df0fd9fe2e516accd9e
         window.clear();
 
         if (!isGameOver) {
@@ -184,6 +204,7 @@ int main() {
             hero.update(deltaTime);
             hero.draw(window);
 
+<<<<<<< HEAD
             for (auto& projectile : projectiles) {
                 projectile.draw(window);
             }
@@ -198,6 +219,10 @@ int main() {
             if (gameOverClock.getElapsedTime().asSeconds() >= 3.0f) {
                 window.close();
             }
+=======
+        for (auto& enemy : enemies) {
+            enemy.draw(window);
+>>>>>>> f3375e5538ad0aa6def07df0fd9fe2e516accd9e
         }
 
         window.display();
