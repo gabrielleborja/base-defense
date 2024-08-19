@@ -14,16 +14,15 @@ Enemy::Enemy(sf::Vector2f startPosition, float speed, const std::string& texture
     enemySprite.setPosition(position);
 }
 
-void Enemy::update(float deltaTime, const sf::Sprite& baseShape, std::vector<Projectile>& projectiles) {
-    // Move em direção à base
-    sf::Vector2f basePos = baseShape.getPosition();
-    sf::Vector2f direction = basePos - position;
-    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-    if (length != 0) {
-        direction /= length;
+void Enemy::update(float deltaTime, const sf::Vector2f& heroPosition, const sf::Vector2f& basePosition, std::vector<Projectile>& projectiles) {
+    // Movimenta-se em direção ao herói
+    sf::Vector2f directionToHero = heroPosition - position;
+    float lengthToHero = std::sqrt(directionToHero.x * directionToHero.x + directionToHero.y * directionToHero.y);
+    if (lengthToHero != 0) {
+        directionToHero /= lengthToHero; // Normaliza a direção
     }
 
-    position += direction * speed * deltaTime;
+    position += directionToHero * speed * deltaTime;
     enemySprite.setPosition(position);
 
     // Atualiza o cooldown do tiro
@@ -33,8 +32,15 @@ void Enemy::update(float deltaTime, const sf::Sprite& baseShape, std::vector<Pro
 
     // Verifica se pode atirar
     if (canShoot()) {
+        // Calcula a direção do tiro em direção à base
+        sf::Vector2f directionToBase = basePosition - position;
+        float lengthToBase = std::sqrt(directionToBase.x * directionToBase.x + directionToBase.y * directionToBase.y);
+        if (lengthToBase != 0) {
+            directionToBase /= lengthToBase; // Normaliza a direção
+        }
+
         // Atira em direção à base
-        projectiles.emplace_back(position, direction, 150.0f, 800.0f, false); // Velocidade do projétil ajustada
+        projectiles.emplace_back(position, directionToBase, 150.0f, 800.0f, false);
         resetShootingCooldown();
     }
 }

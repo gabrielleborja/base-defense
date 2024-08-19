@@ -157,7 +157,7 @@ int main() {
                 if (it->isDead()) {
                     it = enemies.erase(it);
                 } else {
-                    it->update(deltaTime, base.getSprite(), projectiles); // Passa a lista de projéteis
+                    it->update(deltaTime, hero.getShape().getPosition(), base.getSprite().getPosition(), projectiles); // Passa a lista de projéteis
                     ++it;
                 }
             }
