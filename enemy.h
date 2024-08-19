@@ -17,7 +17,7 @@ private:
 public:
     Enemy(sf::Vector2f position, float speed, const std::string& textureFile);
 
-    void update(float deltaTime, const sf::Sprite& baseShape, std::vector<Projectile>& projectiles);
+    void update(float deltaTime, const sf::Vector2f& heroPosition, const sf::Vector2f& basePosition, std::vector<Projectile>& projectiles);
     void draw(sf::RenderWindow& window);
     bool isDead();
     sf::Sprite& getSprite();

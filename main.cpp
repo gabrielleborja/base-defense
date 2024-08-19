@@ -136,12 +136,13 @@ int main() {
             }
         }
 
+
         // Atualizar inimigos
         for (auto it = enemies.begin(); it != enemies.end(); /* vazio */) {
             if (it->isDead()) {
                 it = enemies.erase(it);
             } else {
-                it->update(deltaTime, base.getSprite(), projectiles); // Passa a lista de projéteis
+                it->update(deltaTime, hero.getShape().getPosition(), base.getSprite().getPosition(), projectiles); // Passa a lista de projéteis
 
                 ++it;
             }
@@ -166,7 +167,6 @@ int main() {
         }
 
         for (auto& enemy : enemies) {
-            enemy.render(window);
             enemy.draw(window);
         }
 

@@ -6,7 +6,7 @@ Projectile::Projectile(sf::Vector2f startPosition, sf::Vector2f direction, float
     : position(startPosition), direction(direction), speed(speed), maxRange(range), traveledDistance(0.0f), heroProjectile(isFromHero) {
     shape.setRadius(5.0f);
     shape.setPosition(position);
-    shape.setFillColor(isFromHero ? sf::Color::Red : sf::Color::Red); // Azul para projéteis do herói
+    shape.setFillColor(isFromHero ? sf::Color::Blue : sf::Color::Red); // Azul para projéteis do herói
 }
 
 // Getters
