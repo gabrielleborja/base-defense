@@ -28,12 +28,12 @@ void Base::takeDamage(float damage) {
     }
 }
 
-//void Base::regenerate(float deltaTime) {
-  //  currentHealth += regenRate * deltaTime * 0.3f;
-  //if (currentHealth > maxHealth) {
-  //  currentHealth = maxHealth;
-  //  }
-//}
+void Base::regenerate(float deltaTime) {
+    currentHealth += regenRate * deltaTime * 0.3f;
+  if (currentHealth > maxHealth) {
+    currentHealth = maxHealth;
+    }
+}
 
 void Base::draw(sf::RenderWindow &window) {
     window.draw(baseSprite);
