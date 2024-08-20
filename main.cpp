@@ -19,12 +19,12 @@ int main() {
     const float baseHeight = 400.0f;
 
     sf::Vector2f basePosition(
-        ((windowWidth - baseWidth)+ 50.0 )/ 2.0f,
-        ((windowHeight - baseHeight) -10.0)/ 2.0f
+        ((windowWidth - baseWidth) + 50.0f) / 2.0f,
+        ((windowHeight - baseHeight) - 10.0f) / 2.0f
     );
 
     Base base(basePosition, 100.0f, 5.0f, "base.png");
-    base.getSprite().setScale(sf::Vector2f(baseWidth, baseHeight));
+    base.getSprite().setScale(sf::Vector2f(baseWidth / base.getSprite().getLocalBounds().width, baseHeight / base.getSprite().getLocalBounds().height));
     base.getSprite().setPosition(basePosition);
 
     sf::RectangleShape healthBarBackground;
@@ -50,6 +50,12 @@ int main() {
     gameOverText.setFillColor(sf::Color::Red);
     gameOverText.setPosition(400, 350);
 
+    sf::Text levelText;
+    levelText.setFont(font);
+    levelText.setCharacterSize(50);
+    levelText.setFillColor(sf::Color::Yellow);
+    levelText.setPosition(400, 350); // Posiciona a mensagem na tela
+
     Hero hero(sf::Vector2f(windowWidth / 2.0f - 25.0f, windowHeight / 2.0f - 25.0f), 200.0f, "heroi.png");
 
     std::vector<Projectile> projectiles;
@@ -59,9 +65,13 @@ int main() {
 
     sf::Clock clock;
     sf::Clock enemySpawnClock; // Relógio para controlar o tempo de spawn dos inimigos
+    sf::Clock levelClock;      // Relógio para controlar o tempo para mudar o nível
     sf::Clock gameOverClock;   // Relógio para controlar o tempo após o game over
+    sf::Clock levelMessageClock; // Relógio para gerenciar a exibição da mensagem do nível
 
     bool isGameOver = false;
+    bool showLevelMessage = false;
+    int currentLevel = 1;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -89,8 +99,20 @@ int main() {
         float deltaTime = clock.restart().asSeconds();
 
         if (!isGameOver) {
-            // Adicionar um novo inimigo a cada três segundos
-            if (enemySpawnClock.getElapsedTime().asSeconds() >= 4.0f) {
+            // Aumenta o nível a cada 45 segundos
+            if (levelClock.getElapsedTime().asSeconds() >= 45.0f) {
+                levelClock.restart();
+                ++currentLevel;
+
+                // Atualiza a mensagem do nível
+                levelText.setString("Nivel " + std::to_string(currentLevel));
+                showLevelMessage = true;
+                levelMessageClock.restart(); // Reinicia o relógio para exibir a mensagem
+            }
+
+            float minSpawnInterval = 1.0f; // Intervalo mínimo de 1 segundo
+            float spawnInterval = std::max(5.0f / currentLevel, minSpawnInterval);
+            if (enemySpawnClock.getElapsedTime().asSeconds() >= spawnInterval) {
                 enemySpawnClock.restart();
 
                 // Definir a posição inicial do inimigo em uma das bordas
@@ -116,7 +138,7 @@ int main() {
                         break;
                 }
 
-                enemies.emplace_back(sf::Vector2f(xPos, yPos), 50.0f, "inimigos.png"); // Velocidade reduzida
+                enemies.emplace_back(sf::Vector2f(xPos, yPos), 50.0f, "inimigos.png", currentLevel); // Corrigido: Adiciona o nível ao criar o inimigo
             }
 
             for (auto it = projectiles.begin(); it != projectiles.end(); /* vazio */) {
@@ -173,6 +195,11 @@ int main() {
                 isGameOver = true;
                 gameOverClock.restart(); // Inicializa o relógio ao detectar o game over
             }
+
+            // Gerenciar a exibição da mensagem de nível
+            if (showLevelMessage && levelMessageClock.getElapsedTime().asSeconds() >= 2.0f) { // Mensagem visível por 2 segundos
+                showLevelMessage = false;
+            }
         }
 
         window.clear();
@@ -192,6 +219,11 @@ int main() {
 
             for (auto& enemy : enemies) {
                 enemy.draw(window);
+            }
+
+            // Exibir a mensagem de nível
+            if (showLevelMessage) {
+                window.draw(levelText);
             }
         } else {
             window.draw(gameOverText);

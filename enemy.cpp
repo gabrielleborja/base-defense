@@ -4,14 +4,18 @@
 #include <ctime>
 #include <iostream>
 
-Enemy::Enemy(sf::Vector2f startPosition, float speed, const std::string& textureFile)
-    : position(startPosition), speed(speed), health(3), shootingCooldown(0.0f), shootingCooldownMax(1.0f) {
-    if(!enemyTexture.loadFromFile("inimigos.png")){
-        std::cerr << "Erro ao carregar a textura inimigos.png" << std::endl;
+Enemy::Enemy(sf::Vector2f startPosition, float speed, const std::string& textureFile, int level)
+    : position(startPosition), speed(speed), health(3), shootingCooldown(0.0f), level(level) {
+    if (!enemyTexture.loadFromFile(textureFile)) {
+        std::cerr << "Erro ao carregar a textura " << textureFile << std::endl;
     }
     enemySprite.setTexture(enemyTexture);
     enemySprite.setScale(sf::Vector2f(0.5f, 0.5f));
     enemySprite.setPosition(position);
+
+    // Define a taxa de disparo com base no nível
+    shootRate = 0.4f + 0.3f * (level - 1); // 0.4 tiros por segundo no nível 1, aumentando 0.1 por nível
+    shootingCooldownMax = 1.0f / shootRate; // Define o cooldown máximo baseado na taxa de disparo
 }
 
 void Enemy::update(float deltaTime, const sf::Vector2f& heroPosition, const sf::Vector2f& basePosition, std::vector<Projectile>& projectiles) {
@@ -45,7 +49,6 @@ void Enemy::update(float deltaTime, const sf::Vector2f& heroPosition, const sf::
     }
 }
 
-
 void Enemy::draw(sf::RenderWindow& window) {
     window.draw(enemySprite);
 }
@@ -68,4 +71,10 @@ bool Enemy::canShoot() {
 
 void Enemy::resetShootingCooldown() {
     shootingCooldown = shootingCooldownMax;
+}
+
+void Enemy::increaseLevel(int newLevel) {
+    level = newLevel;
+    shootRate = 0.4f + 0.1f * (level - 1); // Atualiza a taxa de disparo com base no novo nível
+    shootingCooldownMax = 1.0f / shootRate; // Atualiza o cooldown máximo baseado na nova taxa de disparo
 }
