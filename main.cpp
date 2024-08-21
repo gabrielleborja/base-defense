@@ -19,8 +19,8 @@ int main() {
     const float baseHeight = 400.0f;
 
     sf::Vector2f basePosition(
-        ((windowWidth - baseWidth) + 50.0f) / 2.0f,
-        ((windowHeight - baseHeight) - 10.0f) / 2.0f
+        ((windowWidth - baseWidth)/ 2.0f) +220.0f,
+        ((windowHeight - baseHeight)/ 2.0f) +55.0f
     );
 
     Base base(basePosition, 100.0f, 5.0f, "base.png");
