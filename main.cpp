@@ -59,6 +59,18 @@ int main() {
         windowHeight / gameOverTexture.getSize().y
     );
 
+    sf::Texture initialTexture;
+    if (!initialTexture.loadFromFile("assets/images/telainicial.png")) {
+        std::cerr << "Erro ao carregar a textura de background!" << std::endl;
+        return -1;
+    }
+    sf::Sprite initialSprite;
+    initialSprite.setTexture(initialTexture);
+    initialSprite.setScale(
+        windowWidth / gameOverTexture.getSize().x,
+        windowHeight / gameOverTexture.getSize().y
+    );
+
     sf::Vector2f basePosition(
         ((windowWidth - baseWidth)/ 2.0f) +220.0f,
         ((windowHeight - baseHeight)/ 2.0f) +55.0f
