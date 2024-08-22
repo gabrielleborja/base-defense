@@ -4,7 +4,7 @@
 
 Hero::Hero(sf::Vector2f position, float speed, const std::string& textureFile)
     : speed(speed), direction(0.0f, 0.0f), shootingCooldown(0.0f), shootingCooldownMax(0.5f), ammo(100) {
-    if(!heroTexture.loadFromFile("heroi.png")){
+    if(!heroTexture.loadFromFile("assets/images/heroi.png")){
         std::cerr << "Erro ao carregar a textura heroi.png" << std::endl;
     }
     heroSprite.setTexture(heroTexture);

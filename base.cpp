@@ -3,7 +3,7 @@
 
 //Construtor
 Base::Base(sf::Vector2f position, float health, float regen, const std::string& textureFile) : position(position), maxHealth(health), currentHealth(health), regenRate(regen) {
-    if(!baseTexture.loadFromFile("base.png")){
+    if(!baseTexture.loadFromFile("assets/images/base.png")){
         std::cerr << "Erro ao carregar a textura base.png" << std::endl;
     }
     baseSprite.setScale(sf::Vector2f(1.0f, 1.0f));

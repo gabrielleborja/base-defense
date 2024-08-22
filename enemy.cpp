@@ -6,7 +6,7 @@
 
 Enemy::Enemy(sf::Vector2f startPosition, float speed, const std::string& textureFile, int level)
     : position(startPosition), speed(speed), health(3), shootingCooldown(0.0f), level(level) {
-    if (!enemyTexture.loadFromFile(textureFile)) {
+    if (!enemyTexture.loadFromFile("assets/images/inimigos.png")) {
         std::cerr << "Erro ao carregar a textura " << textureFile << std::endl;
     }
     enemySprite.setTexture(enemyTexture);

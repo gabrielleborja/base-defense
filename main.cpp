@@ -20,7 +20,7 @@ int main() {
     const float baseHeight = 400.0f;
 
     sf::SoundBuffer gameOverBuffer;
-    if (!gameOverBuffer.loadFromFile("endSound.wav")) {
+    if (!gameOverBuffer.loadFromFile("assets/sounds/endSound.wav")) {
         std::cerr << "Erro ao carregar o som de disparo!" << std::endl;
         return -1;
     }
@@ -28,7 +28,7 @@ int main() {
     overSound.setBuffer(gameOverBuffer);
 
     sf::Music backgroundMusic;
-    if (!backgroundMusic.openFromFile("bgMusic.wav")) {
+    if (!backgroundMusic.openFromFile("assets/sounds/bgMusic.wav")) {
         std::cerr << "Erro ao carregar a música de fundo!" << std::endl;
         return -1;
     }
@@ -36,7 +36,7 @@ int main() {
     backgroundMusic.play();         
 
     sf::Texture backgroundTexture;
-    if (!backgroundTexture.loadFromFile("bg.png")) {
+    if (!backgroundTexture.loadFromFile("assets/images/bg.png")) {
         std::cerr << "Erro ao carregar a textura de background!" << std::endl;
         return -1;
     }
@@ -48,7 +48,7 @@ int main() {
     );
 
    sf::Texture gameOverTexture;
-    if (!gameOverTexture.loadFromFile("gameover.png")) {
+    if (!gameOverTexture.loadFromFile("assets/images/gameover.png")) {
         std::cerr << "Erro ao carregar a textura de background!" << std::endl;
         return -1;
     }
@@ -64,7 +64,7 @@ int main() {
         ((windowHeight - baseHeight)/ 2.0f) +55.0f
     );
 
-    Base base(basePosition, 100.0f, 5.0f, "base.png");
+    Base base(basePosition, 100.0f, 5.0f, "assets/images/base.png");
     base.getSprite().setScale(sf::Vector2f(baseWidth / base.getSprite().getLocalBounds().width, baseHeight / base.getSprite().getLocalBounds().height));
     base.getSprite().setPosition(basePosition);
 
@@ -79,7 +79,7 @@ int main() {
     healthBar.setPosition(windowWidth - 210.0f, 10.0f);
 
     sf::Font font;
-    if (!font.loadFromFile("arial.ttf")) {
+    if (!font.loadFromFile("assets/fonts/arial.ttf")) {
         std::cerr << "Erro ao carregar a fonte!" << std::endl;
         return -1;
     }
@@ -96,7 +96,7 @@ int main() {
     ammoText.setFillColor(sf::Color::White);
     ammoText.setPosition(1050, 50);
 
-    Hero hero(sf::Vector2f(windowWidth / 2.0f - 25.0f, windowHeight / 2.0f - 25.0f), 200.0f, "heroi.png");
+    Hero hero(sf::Vector2f(windowWidth / 2.0f - 25.0f, windowHeight / 2.0f - 25.0f), 200.0f, "assets/images/heroi.png");
 
     std::vector<Projectile> projectiles;
     std::vector<Enemy> enemies;
@@ -190,7 +190,7 @@ int main() {
                         break;
                 }
 
-                enemies.emplace_back(sf::Vector2f(xPos, yPos), 50.0f, "inimigos.png", currentLevel); // Corrigido: Adiciona o nível ao criar o inimigo
+                enemies.emplace_back(sf::Vector2f(xPos, yPos), 50.0f, "assets/images/inimigos.png", currentLevel); // Corrigido: Adiciona o nível ao criar o inimigo
             }
 
             for (auto it = projectiles.begin(); it != projectiles.end(); /* vazio */) {
