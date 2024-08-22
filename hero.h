@@ -13,6 +13,7 @@ private:
     float speed;
     float shootingCooldown;
     float shootingCooldownMax;
+    int ammo;
 public:
     Hero(sf::Vector2f position, float speed, const std::string& textureFile);
     void handleInput();
@@ -20,7 +21,10 @@ public:
     void draw(sf::RenderWindow& window);
     sf::Sprite& getShape();
     sf::Vector2f getDirection();
-
+    bool hasAmmo() const; 
+    void useAmmo(); 
+    int getAmmo() const; 
+    void addAmmo();
 
 };
 

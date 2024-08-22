@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "projectile.h"
 #include "base.h"
 #include "hero.h"
@@ -17,6 +18,46 @@ int main() {
 
     const float baseWidth = 600.0f;
     const float baseHeight = 400.0f;
+
+    sf::SoundBuffer gameOverBuffer;
+    if (!gameOverBuffer.loadFromFile("endSound.wav")) {
+        std::cerr << "Erro ao carregar o som de disparo!" << std::endl;
+        return -1;
+    }
+    sf::Sound overSound;
+    overSound.setBuffer(gameOverBuffer);
+
+    sf::Music backgroundMusic;
+    if (!backgroundMusic.openFromFile("bgMusic.wav")) {
+        std::cerr << "Erro ao carregar a música de fundo!" << std::endl;
+        return -1;
+    }
+    backgroundMusic.setLoop(true); 
+    backgroundMusic.play();         
+
+    sf::Texture backgroundTexture;
+    if (!backgroundTexture.loadFromFile("bg.png")) {
+        std::cerr << "Erro ao carregar a textura de background!" << std::endl;
+        return -1;
+    }
+    sf::Sprite backgroundSprite;
+    backgroundSprite.setTexture(backgroundTexture);
+    backgroundSprite.setScale(
+        windowWidth / backgroundTexture.getSize().x + 0.5f,
+        windowHeight / backgroundTexture.getSize().y + 0.5f
+    );
+
+   sf::Texture gameOverTexture;
+    if (!gameOverTexture.loadFromFile("gameover.png")) {
+        std::cerr << "Erro ao carregar a textura de background!" << std::endl;
+        return -1;
+    }
+    sf::Sprite gameOverSprite;
+    gameOverSprite.setTexture(gameOverTexture);
+    gameOverSprite.setScale(
+        windowWidth / gameOverTexture.getSize().x,
+        windowHeight / gameOverTexture.getSize().y
+    );
 
     sf::Vector2f basePosition(
         ((windowWidth - baseWidth)/ 2.0f) +220.0f,
@@ -43,18 +84,17 @@ int main() {
         return -1;
     }
 
-    sf::Text gameOverText;
-    gameOverText.setFont(font);
-    gameOverText.setString("Game Over");
-    gameOverText.setCharacterSize(50);
-    gameOverText.setFillColor(sf::Color::Red);
-    gameOverText.setPosition(400, 350);
-
     sf::Text levelText;
     levelText.setFont(font);
-    levelText.setCharacterSize(50);
+    levelText.setCharacterSize(70);
     levelText.setFillColor(sf::Color::Yellow);
-    levelText.setPosition(400, 350); // Posiciona a mensagem na tela
+    levelText.setPosition(500, 350); // Posiciona a mensagem na tela
+
+    sf::Text ammoText;
+    ammoText.setFont(font);
+    ammoText.setCharacterSize(20);
+    ammoText.setFillColor(sf::Color::White);
+    ammoText.setPosition(1050, 50);
 
     Hero hero(sf::Vector2f(windowWidth / 2.0f - 25.0f, windowHeight / 2.0f - 25.0f), 200.0f, "heroi.png");
 
@@ -75,42 +115,54 @@ int main() {
 
     while (window.isOpen()) {
         sf::Event event;
+        ammoText.setString("Munição: " + std::to_string(hero.getAmmo()));
+        window.draw(ammoText);
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
 
             if (!isGameOver && event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
-                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-                sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+                if (hero.hasAmmo()) {
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                    sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 
-                sf::Vector2f heroPos = hero.getShape().getPosition();
-                sf::Vector2f direction = mousePosF - heroPos;
-                float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-                if (length != 0) {
-                    direction /= length; // Normaliza a direção
+                    sf::Vector2f heroPos = hero.getShape().getPosition();
+                    sf::Vector2f direction = mousePosF - heroPos;
+                    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+                    if (length != 0) {
+                        direction /= length; // Normaliza a direção
+                    }
+
+                    float projectileSpeed = 300.0f;
+                    float projectileRange = 700.0f;
+                    projectiles.emplace_back(heroPos + sf::Vector2f(25.0f, 25.0f), direction, projectileSpeed, projectileRange, true); // true indica que o projétil é do herói
+                    hero.useAmmo();
                 }
-
-                float projectileSpeed = 300.0f;
-                float projectileRange = 700.0f;
-                projectiles.emplace_back(heroPos + sf::Vector2f(25.0f, 25.0f), direction, projectileSpeed, projectileRange, true); // true indica que o projétil é do herói
             }
         }
 
         float deltaTime = clock.restart().asSeconds();
 
+
         if (!isGameOver) {
-            // Aumenta o nível a cada 45 segundos
-            if (levelClock.getElapsedTime().asSeconds() >= 45.0f) {
+            ammoText.setString("Ammo: " + std::to_string(hero.getAmmo()));
+        }
+
+        if (!isGameOver) {
+            // Aumenta o nível a cada 30 segundos
+            if (levelClock.getElapsedTime().asSeconds() >= 30.0f) {
                 levelClock.restart();
                 ++currentLevel;
+                for(int i=0; i<currentLevel; i++){
+                    hero.addAmmo();
+                }
 
-                // Atualiza a mensagem do nível
                 levelText.setString("Nivel " + std::to_string(currentLevel));
                 showLevelMessage = true;
-                levelMessageClock.restart(); // Reinicia o relógio para exibir a mensagem
+                levelMessageClock.restart(); 
             }
 
-            float minSpawnInterval = 1.0f; // Intervalo mínimo de 1 segundo
+            float minSpawnInterval = 1.0f;
             float spawnInterval = std::max(5.0f / currentLevel, minSpawnInterval);
             if (enemySpawnClock.getElapsedTime().asSeconds() >= spawnInterval) {
                 enemySpawnClock.restart();
@@ -163,7 +215,7 @@ int main() {
                 } else {
                     // Verifica colisão com a base
                     if (it->checkCollision(base.getSprite())) {
-                        base.takeDamage(3.0f);  // Causa 5 de dano à base
+                        base.takeDamage(3.0f);  // Causa 3 de dano à base
                         it = projectiles.erase(it); // Remove o projétil após o dano
                         removed = true;
                     }
@@ -178,6 +230,7 @@ int main() {
             for (auto it = enemies.begin(); it != enemies.end(); /* vazio */) {
                 if (it->isDead()) {
                     it = enemies.erase(it);
+                    hero.addAmmo();
                 } else {
                     it->update(deltaTime, hero.getShape().getPosition(), base.getSprite().getPosition(), projectiles); // Passa a lista de projéteis
                     ++it;
@@ -193,11 +246,12 @@ int main() {
 
             if (base.getCurrentHealth() <= 0.0f) {
                 isGameOver = true;
-                gameOverClock.restart(); // Inicializa o relógio ao detectar o game over
+                gameOverClock.restart(); 
+                overSound.play();
             }
 
             // Gerenciar a exibição da mensagem de nível
-            if (showLevelMessage && levelMessageClock.getElapsedTime().asSeconds() >= 2.0f) { // Mensagem visível por 2 segundos
+            if (showLevelMessage && levelMessageClock.getElapsedTime().asSeconds() >= 2.0f) { 
                 showLevelMessage = false;
             }
         }
@@ -205,6 +259,7 @@ int main() {
         window.clear();
 
         if (!isGameOver) {
+            window.draw(backgroundSprite);
             base.draw(window);
             window.draw(healthBarBackground);
             window.draw(healthBar);
@@ -212,6 +267,10 @@ int main() {
             hero.handleInput();
             hero.update(deltaTime);
             hero.draw(window);
+
+            if (showLevelMessage) {
+                window.draw(levelText);
+            }
 
             for (auto& projectile : projectiles) {
                 projectile.draw(window);
@@ -221,15 +280,13 @@ int main() {
                 enemy.draw(window);
             }
 
-            // Exibir a mensagem de nível
-            if (showLevelMessage) {
-                window.draw(levelText);
-            }
-        } else {
-            window.draw(gameOverText);
+            window.draw(ammoText);
+        } 
+        else {
+            window.draw(gameOverSprite);
 
-            // Fechar a janela após 3 segundos de exibição da mensagem de Game Over
-            if (gameOverClock.getElapsedTime().asSeconds() >= 3.0f) {
+            // Fechar a janela após 4 segundos de exibição da mensagem de Game Over
+            if (gameOverClock.getElapsedTime().asSeconds() >= 4.0f) {
                 window.close();
             }
         }

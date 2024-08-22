@@ -3,7 +3,7 @@
 #include <iostream>
 
 Hero::Hero(sf::Vector2f position, float speed, const std::string& textureFile)
-    : speed(speed), direction(0.0f, 0.0f), shootingCooldown(0.0f), shootingCooldownMax(0.5f) {
+    : speed(speed), direction(0.0f, 0.0f), shootingCooldown(0.0f), shootingCooldownMax(0.5f), ammo(100) {
     if(!heroTexture.loadFromFile("heroi.png")){
         std::cerr << "Erro ao carregar a textura heroi.png" << std::endl;
     }
@@ -54,4 +54,24 @@ sf::Sprite& Hero::getShape() {
 
 sf::Vector2f Hero::getDirection() {
     return direction;
+}
+
+bool Hero::hasAmmo() const {
+    return ammo > 0;
+}
+
+void Hero::useAmmo() {
+    if (ammo > 0) {
+        ammo--;
+    }
+}
+
+void Hero::addAmmo() {
+    if (ammo < 100) {
+        ammo = ammo + 2;
+    }
+}
+
+int Hero::getAmmo() const {
+    return ammo;
 }
