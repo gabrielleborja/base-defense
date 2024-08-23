@@ -124,8 +124,46 @@ int main() {
     bool isGameOver = false;
     bool showLevelMessage = false;
     int currentLevel = 1;
+    
+
+    bool gameStarted = false;
 
     while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            if (event.type == sf::Event::KeyPressed){
+                if (event.key.code == sf::Keyboard::Enter)
+                gameStarted = true;
+        }
+
+            if (!isGameOver && event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+                if (hero.hasAmmo()) {
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                    sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+
+                    sf::Vector2f heroPos = hero.getShape().getPosition();
+                    sf::Vector2f direction = mousePosF - heroPos;
+                    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+                    if (length != 0) {
+                        direction /= length; // Normaliza a direção
+                    }
+
+                    float projectileSpeed = 300.0f;
+                    float projectileRange = 700.0f;
+                    projectiles.emplace_back(heroPos + sf::Vector2f(25.0f, 25.0f), direction, projectileSpeed, projectileRange, true); // true indica que o projétil é do herói
+                    hero.useAmmo();
+                }
+            }
+        }
+
+        window.clear();
+        if (!gameStarted) {
+            window.draw(initialSprite);
+        }else {
+            // Início do loop principal do jogoaaaa
         sf::Event event;
         ammoText.setString("Munição: " + std::to_string(hero.getAmmo()));
         window.draw(ammoText);
@@ -302,6 +340,8 @@ int main() {
                 window.close();
             }
         }
+        }
+        
 
         window.display();
     }

@@ -8,6 +8,7 @@ class Enemy {
 private:
     sf::Sprite enemySprite;
     sf::Texture enemyTexture;
+    sf::Texture enemyTexture2;
     sf::Vector2f position;
     float speed;
     int health;
