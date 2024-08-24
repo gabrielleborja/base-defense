@@ -32,14 +32,22 @@
 
 ### 1. **Pré-requisitos**
 - **SFML**: Certifique-se de ter a biblioteca SFML instalada em sua máquina.
+- Certifique-se de que o SFML está instalado no seu computador e que os diretórios de inclusão e bibliotecas estão configurados corretamente. O projeto assume que o SFML está localizado nos seguintes diretórios:
+
+  *Cabeçalhos:* C:\SFML\include
+
+   *Bibliotecas:* C:\SFML\lib
 - **Compilador C++**: GCC, Clang, ou qualquer outro compatível com C++11 ou superior.
 
 ### 2. **Compilação**
 - Navegue até o diretório do projeto.
-- Compile o projeto utilizando o comando abaixo:
+- Compile o projeto utilizando os comando abaixo:
 
   ```bash
-  g++ -g -o BaseDefender main.cpp base.cpp projectile.cpp enemy.cpp hero.cpp  -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+  make clean
+  ```
+  ```bash
+  make
   ```
 
 ### 3. **Execução**
@@ -52,5 +60,5 @@
 ## Controles do Jogo
 
 - **W-A-S-D**: Movimentar a base.
-- **Botão direito do mouse**: Atirar.
+- **Botão esquerdo do mouse**: Atirar.
 - **Enter**: Iniciar o jogo.
